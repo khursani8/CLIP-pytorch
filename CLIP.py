@@ -41,6 +41,7 @@ class MultiheadAttention(nn.Module):
 
         self.out_proj = nn.Linear(self.hidden_size, self.hidden_size)
         self.query_scale = torch.tensor(0.125, dtype=torch.float64)
+        self.softmax = nn.Softmax(dim=-1)
 
 
     def transpose_for_scores(self, x):
@@ -72,7 +73,7 @@ class MultiheadAttention(nn.Module):
             attention_scores = attention_scores + attention_mask
 
         # Normalize the attention scores to probabilities.
-        attention_probs = nn.Softmax(dim=-1)(attention_scores)
+        attention_probs = self.softmax(attention_scores)
 
         # This is actually dropping out entire tokens to attend to, which might
         # seem a bit unusual, but is taken from the original Transformer paper.
