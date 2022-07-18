@@ -250,18 +250,5 @@ class CLIP(nn.Module):
         return output
 
     def forward(self, image, input, return_loss=False):
-        text_latents = self.encode_text(input)
         image_latents = self.encode_image(image)
-        logit_scale = self.logit_scale.exp()
-
-        text_latents, image_latents = map(lambda t: F.normalize(t, p = 2, dim = -1), (text_latents, image_latents))
-        sim_i_2_t = torch.matmul(torch.mul(logit_scale, image_latents), torch.t(text_latents))
-        sim_t_2_i = sim_i_2_t.t() #torch.matmul(torch.mul(logit_scale, text_latents), torch.t(image_latents))
-        
-        if return_loss:
-            assert image.size(0) == input.size(0), "Not Support for unbalanced image-text pair"
-            loss_t_2_i = F.cross_entropy(sim_t_2_i, torch.arange(input.size(0), device = image_latents.device))
-            loss_i_2_t = F.cross_entropy(sim_i_2_t, torch.arange(image.size(0), device = image_latents.device))
-            return sim_i_2_t, sim_t_2_i, loss_i_2_t, loss_t_2_i
-        else:
-            return sim_i_2_t, sim_t_2_i
+        return image_latents
