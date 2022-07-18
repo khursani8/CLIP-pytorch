@@ -67,7 +67,7 @@ class MultiheadAttention(nn.Module):
         if self.num_attention_heads == 8:
             # text branch need attention mask
             attention_mask = torch.tril(torch.ones(1, hidden_states.size(0), hidden_states.size(0)), diagonal=0)
-            attention_mask = attention_mask.to(dtype=next(self.parameters()).dtype, device=hidden_states.device)
+            attention_mask = attention_mask.to(device=hidden_states.device)
             attention_mask = (1.0 - attention_mask) * -10000000.0
             attention_scores = attention_scores + attention_mask
 
